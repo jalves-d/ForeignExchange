@@ -83,7 +83,7 @@ Set-ExecutionPolicy Unrestricted -Scope CurrentUser
 - YOUR_SERVER: Replace with the name of your SQL Server instance. You can verify your server name using SQL Server Management Studio;
 - YOUR_SECRET_KEY: Use a strong secret key for JWT token generation. Choose a key with more then 32 digits.
 - YOUR_API_KEY: Replace with your Alpha Vantage API key. To get your free key (https://www.alphavantage.co/support/#api-key)
-- YOUR_AZURE_SERVICE_BUS_CONNECTION_STRING: Add your Azure Service Bus connection string.
+- YOUR_AZURE_SERVICE_BUS_CONNECTION_STRING: Add your Azure Service Bus connection string. This is not available use (Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key)
 - YOUR_PEPPER: Use a strong pepper value for hashing.
 
 ### 5. Execute the Configuration Script
