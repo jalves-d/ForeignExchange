@@ -16,6 +16,7 @@ if (-Not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
         Write-Error "Error during .NET SDK installation: $($_.Exception.Message)"
     }
     finally {
+        dotnet tool install --global dotnet-ef
         Remove-Item $dotNetInstallerPath
     }
 }
@@ -84,6 +85,22 @@ else
   "AllowedHosts": "*"
 }
 "@ | Set-Content -Path $appSettingsPath
+
+# Check if the 'dotnet' command is available
+  if (Get-Command dotnet -ErrorAction SilentlyContinue) {
+      Write-Host ".NET SDK found. Starting global installation of dotnet-ef..."
+
+      # Install dotnet-ef globally
+      try {
+          dotnet tool install --global dotnet-ef
+          Write-Host "dotnet-ef installed globally successfully. Errors executing dotnet-ef commands, close the window and execute the script more one time!"
+      }
+      catch {
+          Write-Error "Error during dotnet-ef installation: $($_.Exception.Message)"
+      }
+  } else {
+      Write-Warning ".NET SDK not found. dotnet-ef will not be installed. Please execute the script again when the it was solved!"
+  }
 
   # Restore project dependencies
   Write-Host "Restoring project dependencies..."
