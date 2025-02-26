@@ -5,6 +5,8 @@
 
 # appsettings.json
 ForeignExchange/appsettings.json
+ForeignExchange/Migrations
+ForeignExchange/Migrations/*
 
 # User-specific files
 *.rsuser
