@@ -2,11 +2,22 @@
 
 # Verify if .NET SDK is installed
 if (-Not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    Write-Host "Installing .NET SDK..."
-    $dotNetInstallerUrl = "https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-desktop-installer-8.0.100-windows-x64.exe"
-    Invoke-WebRequest -Uri $dotNetInstallerUrl -OutFile "dotnet-installer.exe"
-    Start-Process -FilePath "dotnet-installer.exe" -ArgumentList "/quiet" -Wait
-    Remove-Item "dotnet-installer.exe"
+    Write-Host "Installing .NET SDK using dotnet-install.ps1..."
+    $dotNetInstallerUrl = "https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.ps1"
+    $dotNetInstallerPath = "dotnet-install.ps1"
+    Invoke-WebRequest -Uri $dotNetInstallerUrl -OutFile $dotNetInstallerPath
+
+    # Execute dotnet-install.ps1 and wait for completion
+    try {
+        & powershell.exe -ExecutionPolicy Bypass -File $dotNetInstallerPath -Channel 8.0 -NoRestart -Runtime sdk
+        Write-Host ".NET SDK installation completed."
+    }
+    catch {
+        Write-Error "Error during .NET SDK installation: $($_.Exception.Message)"
+    }
+    finally {
+        Remove-Item $dotNetInstallerPath
+    }
 }
 
 # Verify if SQL Server Express is installed
