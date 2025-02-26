@@ -13,7 +13,7 @@ Before running the script, ensure that you have the following:
 ## Configuration Steps
 
 ### 1. Clone the Repository
- - Clone the ForeignExchange repository to your local machine using Git:
+ - Clone the ForeignExchange repository to your local machine using Git or download it in Zip format and extract it:
 
 ```powershell
 git clone <repository-url>
@@ -22,6 +22,10 @@ cd ForeignExchange
 
 ### 2. Open PowerShell
  - Navigate to the directory of your cloned project in PowerShell. You can do this by right-clicking on the folder and selecting “Open PowerShell window here” or using the cd command.
+ - Execute the command in a PowerShell window with Administrative privileges to ensure you gonna have permission to run the script, remmind to fix it later
+```powershell
+Set-ExecutionPolicy Unrestricted -Scope CurrentUser
+```
 
 ### 3. Edit the Configuration Script
 ### This script will perform the following actions:
@@ -89,10 +93,11 @@ cd ForeignExchange
 .\setup.ps1
 ```
 
-### 6. Run the Application
+### 6. Run the Application and Restore the ExecutionPolicy
  - After the script completes successfully, you can run the application with the following command:
 
 ```powershell
+Set-ExecutionPolicy Restricted -Scope CurrentUser
 dotnet run --project ForeignExchange/ForeignExchange.csproj
 ```
 

@@ -9,7 +9,7 @@ if (-Not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
 
     # Execute dotnet-install.ps1 and wait for completion
     try {
-        & powershell.exe -ExecutionPolicy Bypass -File $dotNetInstallerPath -Channel 8.0 -NoRestart -Runtime sdk
+        & powershell.exe -ExecutionPolicy Bypass -File $dotNetInstallerPath -Channel 8.0
         Write-Host ".NET SDK installation completed."
     }
     catch {
@@ -23,10 +23,26 @@ if (-Not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
 # Verify if SQL Server Express is installed
 if (-Not (Get-Command sqlcmd -ErrorAction SilentlyContinue)) {
     Write-Host "Installing SQL Server Express..."
-    $sqlServerInstallerUrl = "https://go.microsoft.com/fwlink/?linkid=860240"
+    $sqlServerInstallerUrl = "https://download.microsoft.com/download/7/f/8/7f8a9c43-8c8a-4f7c-9f92-83c18d96b681/SQL2019-SSEI-Expr.exe"
     $sqlInstallerPath = "SQLServerInstaller.exe"
     Invoke-WebRequest -Uri $sqlServerInstallerUrl -OutFile $sqlInstallerPath
-    Start-Process -FilePath $sqlInstallerPath -ArgumentList "/quiet" -Wait
+
+    # Start the installation with license terms accepted
+    Start-Process -FilePath $sqlInstallerPath -ArgumentList "/quiet", "/IAcceptSQLServerLicenseTerms=TRUE" -Wait
+
+    # Add an additional wait time (adjust as needed)
+    Start-Sleep -Seconds 60
+
+    # Verify that the SQL Server Express process has finished
+    $processName = "SQL2019-SSEI-Expr" # Adjust if necessary
+    $process = Get-Process -Name $processName -ErrorAction SilentlyContinue
+
+    if ($process -eq $null) {
+        Write-Host "SQL Server Express installation completed."
+    } else {
+        Write-Warning "SQL Server Express installation may have failed or is still running."
+    }
+
     Remove-Item $sqlInstallerPath
 }
 else
