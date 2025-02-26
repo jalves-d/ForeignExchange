@@ -18,45 +18,34 @@ if (-Not (Get-Command sqlcmd -ErrorAction SilentlyContinue)) {
     Start-Process -FilePath $sqlInstallerPath -ArgumentList "/quiet" -Wait
     Remove-Item $sqlInstallerPath
 }
-
-# Ask for SQL Server name if SQL Server is not found
-$sqlConnectionSuccessful = Test-Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL"
-if (-Not $sqlConnectionSuccessful) {
-    Write-Host "SQL Server not found. Please enter the SQL server name to be used (e.g., DESKTOP-8618KQI\SQLEXPRESS):"
-    $ServerName = Read-Host "Server name"
-} else {
-    $ServerName = ".\SQLEXPRESS"
-}
-
-# Construct the connection string
-$ConnectionString = "Server=$ServerName;Database=ForeignExchange;Integrated Security=True;TrustServerCertificate=True;"
-
-# Create or overwrite the appsettings.json
-$appSettingsPath = "ForeignExchange/appsettings.json"
-@"
+else
 {
+  # Create or overwrite the appsettings.json
+  $appSettingsPath = "ForeignExchange/appsettings.json"
+@"
+ {
   "ConnectionStrings": {
-    "DefaultConnection": "$ConnectionString"
+    "DefaultConnection": "Server=YOUR_SERVER;Database=ForeignExchange;Integrated Security=True;TrustServerCertificate=True;"
   },
   "JwtSettings": {
-    "SecretKey": "pM6+Nw8zFfV1J3hYBvLq9E5X4a7UoCmK4sG2RkTzPdQ=",
+    "SecretKey": "YOUR_SECRET_KEY",
     "Issuer": "swagger-test",
     "Audience": "swagger-users",
     "ExpirationTime": 3600
   },
   "AlphaVantage": {
-    "ApiKey": "41O60PVJPCW4F6FN",
+    "ApiKey": "YOUR_API_KEY",
     "BaseUrl": "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={0}&to_currency={1}&apikey={2}"
   },
   "AzureServiceBus": {
-    "ConnectionString": "Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key",
+    "ConnectionString": "YOUR_AZURE_SERVICE_BUS_CONNECTION_STRING",
     "QueueName": "exchange-rates-queue"
   },
   "EncryptHashing": {
     "SaltSize": 16,
     "IterationCount": 10000,
     "KeySize": 32,
-    "Pepper": "YourSuperSecureSecretKey"
+    "Pepper": "YOUR_PEPPER"
   },
   "Logging": {
     "LogLevel": {
@@ -69,20 +58,21 @@ $appSettingsPath = "ForeignExchange/appsettings.json"
 }
 "@ | Set-Content -Path $appSettingsPath
 
-# Restore project dependencies
-Write-Host "Restoring project dependencies..."
-dotnet restore
+  # Restore project dependencies
+  Write-Host "Restoring project dependencies..."
+  dotnet restore
 
-# Remove existing migrations
-Write-Host "Removing existing migrations..."
-dotnet ef migrations remove --project ForeignExchange/ForeignExchange.csproj --startup-project ForeignExchange/ForeignExchange.csproj -y
+  # Remove existing migrations
+  Write-Host "Removing existing migrations..."
+  dotnet ef migrations remove --project ForeignExchange/ForeignExchange.csproj --startup-project ForeignExchange/ForeignExchange.csproj -y
 
-# Create a new migration
-Write-Host "Creating new migration..."
-dotnet ef migrations add InitialCreate --project ForeignExchange/ForeignExchange.csproj --startup-project ForeignExchange/ForeignExchange.csproj
+  # Create a new migration
+  Write-Host "Creating new migration..."
+  dotnet ef migrations add InitialCreate --project ForeignExchange/ForeignExchange.csproj --startup-project ForeignExchange/ForeignExchange.csproj
 
-# Update the database with the new migration
-Write-Host "Updating the database..."
-dotnet ef database update --project ForeignExchange/ForeignExchange.csproj --startup-project ForeignExchange/ForeignExchange.csproj
+  # Update the database with the new migration
+  Write-Host "Updating the database..."
+  dotnet ef database update --project ForeignExchange/ForeignExchange.csproj --startup-project ForeignExchange/ForeignExchange.csproj
 
-Write-Host "Script executed successfully! The application is configured."
+  Write-Host "Script executed successfully! The application is configured."
+}

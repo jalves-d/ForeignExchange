@@ -36,7 +36,7 @@ namespace ForeignExchange.Tests.Services
 
             // Assert
             Assert.False(string.IsNullOrEmpty(hashedPassword));
-            Assert.Contains(".", hashedPassword); // A string deve conter um ponto separando salt e hash
+            Assert.Contains(".", hashedPassword);
         }
 
         [Fact]

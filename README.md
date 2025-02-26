@@ -74,7 +74,9 @@ cd ForeignExchange
 }
 ```
 
-- YOUR_SERVER: Replace with the name of your SQL Server instance. Probably will be in place after the script execution, but, you can confirm using the command ();
+### The script try to install SQL Server if you dont have installed, after the installation you gonna need to execute setup.ps1 more one time.
+
+- YOUR_SERVER: Replace with the name of your SQL Server instance. You can verify your server name using SQL Server Management Studio;
 - YOUR_SECRET_KEY: Use a strong secret key for JWT token generation. Choose a key with more then 32 digits.
 - YOUR_API_KEY: Replace with your Alpha Vantage API key. To get your free key (https://www.alphavantage.co/support/#api-key)
 - YOUR_AZURE_SERVICE_BUS_CONNECTION_STRING: Add your Azure Service Bus connection string.
@@ -94,7 +96,7 @@ cd ForeignExchange
 dotnet run --project ForeignExchange/ForeignExchange.csproj
 ```
 
-## This command will start the application, and you can access it at https://localhost:7195 (or the configured port).
+## This command will start the application, and you can access it at http://localhost:5218/swagger/index.html (or the configured port).
 
 ### 7. Testing the Application
 - To run tests for the application:=
