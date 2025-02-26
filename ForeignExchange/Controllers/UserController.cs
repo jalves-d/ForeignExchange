@@ -1,0 +1,64 @@
+using ForeignExchange.Application.DTOs;
+using ForeignExchange.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+
+[ApiController]
+[Route("api/user")]
+public class UserController : ControllerBase
+{
+    private readonly IUserService _userService;
+    private readonly IAuthService _authService;
+
+    public UserController(IUserService userService, IAuthService authService)
+    {
+        _userService = userService;
+        _authService = authService;
+    }
+
+    /// <summary>
+    /// Register a new user
+    /// </summary>
+    /// <remarks>
+    /// This endpoint allows a new user to register by providing necessary information.
+    /// </remarks>
+    /// <param name="registrationDto">The data transfer object containing user registration details.</param>
+    /// <returns>A response indicating the success of the registration.</returns>
+    [HttpPost("register")]
+    [SwaggerOperation(Summary = "Register a new user", OperationId = "Register")]
+    public async Task<IActionResult> Register([FromBody] UserDTO registrationDto)
+    {
+        try
+        {
+            await _userService.RegisterUserAsync(registrationDto);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Login a registered user
+    /// </summary>
+    /// <remarks>
+    /// This endpoint allows a registered user to log in and receive a token for authenticated requests.
+    /// </remarks>
+    /// <param name="loginDto">The data transfer object containing user login details.</param>
+    /// <returns>A token that can be used to validate authenticated requests.</returns>
+    [HttpPost("login")]
+    [SwaggerOperation(Summary = "Login a registered user", OperationId = "Login")]
+    public async Task<IActionResult> Login([FromBody] UserDTO loginDto)
+    {
+        try
+        {
+            var token = await _authService.AuthenticateAsync(loginDto);
+            return Ok(new { Token = token });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+}

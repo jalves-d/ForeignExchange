@@ -1,0 +1,6 @@
+@ForeignExchange_HostAddress = http://localhost:5218
+
+GET {{ForeignExchange_HostAddress}}/
+Accept: application/json
+
+###
