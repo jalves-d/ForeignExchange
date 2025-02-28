@@ -9,6 +9,7 @@ using ForeignExchange.Domain.Entities;
 using ForeignExchange.Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using ForeignExchange.Application.Interfaces;
+using ForeignExchange.Application.Services;
 
 namespace ForeignExchange.Tests.Services
 {

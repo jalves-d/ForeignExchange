@@ -7,8 +7,11 @@ using ForeignExchange.Application.Interfaces;
 using ForeignExchange.Application.DTOs;
 using ForeignExchange.Domain.Entities;
 using ForeignExchange.Application.Exceptions;
+using Microsoft.Extensions.Configuration;
 
-public class AuthService : IAuthService
+namespace ForeignExchange.Application.Services
+{
+    public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasherService _passwordHasherService;
@@ -69,5 +72,5 @@ public class AuthService : IAuthService
             throw new InvalidCredentialCustomException("Invalid credentials!");
         }
     }
-
+    }
 }

@@ -1,10 +1,10 @@
-﻿using ForeignExchange.Application.Services;
-using ForeignExchange.Domain.Entities;
+﻿using ForeignExchange.Domain.Entities;
 using ForeignExchange.Domain.Exceptions;
 using ForeignExchange.Infrastructure.Data;
 using ForeignExchange.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.RegularExpressions;

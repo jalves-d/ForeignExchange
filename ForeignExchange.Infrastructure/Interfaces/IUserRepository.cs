@@ -1,4 +1,3 @@
-using ForeignExchange.Application.DTOs;
 using ForeignExchange.Domain.Entities;
 using System.Threading.Tasks;
 
@@ -8,6 +7,6 @@ namespace ForeignExchange.Infrastructure.Interfaces
     {
         Task<User> GetUserByUsernameAsync(string username);
         Task<User> GetUserByEmailAsync(string email);
-        Task<bool> RegisterUserAsync(UserDTO userDto);
+        Task<bool> RegisterUserAsync(User userDto);
     }
 }

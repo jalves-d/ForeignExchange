@@ -2,7 +2,7 @@
 using ForeignExchange.Domain.Exceptions;
 using ForeignExchange.Infrastructure.Interfaces;
 using ForeignExchange.Infrastructure.Model;
-using Microsoft.AspNet.SignalR.Client.Http;
+using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Text.Json;
 

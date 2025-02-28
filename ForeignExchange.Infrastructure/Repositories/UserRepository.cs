@@ -1,25 +1,17 @@
-using ForeignExchange.Application.DTOs;
-using ForeignExchange.Application.Interfaces;
-using ForeignExchange.Application.Services;
 using ForeignExchange.Domain.Entities;
 using ForeignExchange.Infrastructure.Data;
 using ForeignExchange.Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace ForeignExchange.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
-        private readonly IPasswordHasherService _passwordHasherService;
 
-        public UserRepository(AppDbContext context, IPasswordHasherService passwordHasherService)
+        public UserRepository(AppDbContext context)
         {
             _context = context;
-            _passwordHasherService = passwordHasherService;
         }
 
         public async Task<User> GetUserByUsernameAsync(string username)
@@ -32,26 +24,19 @@ namespace ForeignExchange.Infrastructure.Repositories
             return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task<bool> RegisterUserAsync(UserDTO userDto)
+        public async Task<bool> RegisterUserAsync(User newUser)
         {
             // Check if the username or email already exists
-            if (await _context.Users.AnyAsync(u => u.Username == userDto.Username))
+            if (await _context.Users.AnyAsync(u => u.Username == newUser.Username))
             {
                 return false; // User already exists
             }
-            else if (await _context.Users.AnyAsync(u => u.Email == userDto.Email))
+            else if (await _context.Users.AnyAsync(u => u.Email == newUser.Email))
             {
                 return false; // User already exists
             }
-            // Create new user
-            var user = new User
-            {
-                Username = userDto.Username,
-                Email = userDto.Email,
-                PasswordHash = _passwordHasherService.HashPassword(userDto.Password)
-            };
 
-            await _context.Users.AddAsync(user);
+            await _context.Users.AddAsync(newUser);
             await _context.SaveChangesAsync();
 
             return true; // Registration successful

@@ -5,6 +5,7 @@ using ForeignExchange.Application.Interfaces;
 using ForeignExchange.Domain.Events;
 using ForeignExchange.Domain.Exceptions;
 using ForeignExchange.Application.DTOs;
+using Microsoft.Extensions.Logging;
 
 namespace ForeignExchange.Application.Services
 {

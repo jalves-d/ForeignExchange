@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using ForeignExchange.Application.DTOs;
+using ForeignExchange.Domain.Entities;
 
 namespace ForeignExchange.Application.Interfaces
 {
