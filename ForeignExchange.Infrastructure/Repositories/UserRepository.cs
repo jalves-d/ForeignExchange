@@ -23,23 +23,36 @@ namespace ForeignExchange.Infrastructure.Repositories
         {
             return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         }
+        public async Task<bool> DeleteUserAsync(User user)
+        {
+            try{ 
+                _context.Users.Remove(user);
+            }
+            catch (Exception) 
+            {
+                throw new Exception();
+            }
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
         public async Task<bool> RegisterUserAsync(User newUser)
         {
             // Check if the username or email already exists
-            if (await _context.Users.AnyAsync(u => u.Username == newUser.Username))
+            if (await _context.Users.AnyAsync(u => u.Username == newUser.Username || u.Email == newUser.Username))
             {
-                return false; // User already exists
+                return false;
             }
             else if (await _context.Users.AnyAsync(u => u.Email == newUser.Email))
             {
-                return false; // User already exists
+                return false; 
             }
 
             await _context.Users.AddAsync(newUser);
+
             await _context.SaveChangesAsync();
 
-            return true; // Registration successful
+            return true;
         }
 
         public async Task<bool> UpdateUserEmailAsync(User user, string newEmail)
@@ -49,7 +62,7 @@ namespace ForeignExchange.Infrastructure.Repositories
 
             if (emailExists)
             {
-                return false; // Email is already taken
+                return false; 
             }
 
             // Update the user's email
@@ -73,7 +86,6 @@ namespace ForeignExchange.Infrastructure.Repositories
                 return false;
             }
 
-            // Update the user's username
             user.Username = newUsername;
 
             // Attach the user to the context if it is not already tracked

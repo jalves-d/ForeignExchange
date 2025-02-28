@@ -1,5 +1,7 @@
 using ForeignExchange.Application.DTOs;
 using ForeignExchange.Application.Interfaces;
+using ForeignExchange.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -26,7 +28,7 @@ public class UserController : ControllerBase
     /// <returns>A response indicating the success of the registration.</returns>
     [HttpPost("register")]
     [SwaggerOperation(Summary = "Register a new user", OperationId = "Register")]
-    public async Task<IActionResult> Register([FromBody] UserDTO registrationDto)
+    public async Task<IActionResult> RegisterUser([FromBody] UserDTO registrationDto)
     {
         try
         {
@@ -40,6 +42,31 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
+    /// Delete an exchange rate
+    /// </summary>
+    /// <remarks>
+    /// This endpoint deletes an exchange rate for the specified currency pair.
+    /// </remarks>
+    /// <param name="baseCurrency">The base currency code.</param>
+    /// <param name="quoteCurrency">The quote currency code.</param>
+    /// <returns>Confirmation of the deleted exchange rate.</returns>
+    [HttpDelete("{user}")]
+    [Authorize]
+    [SwaggerOperation(Summary = "Delete an user", OperationId = "DeleteUser")]
+    public async Task<IActionResult> DeleteUser(string user)
+    {
+        try
+        {
+            await _userService.DeleteUserAsync(user);
+            return Ok("User was deleted!");
+        }
+        catch (Exception ex)
+        {
+            return NotFound("User was not deleted due to error: " + ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Login a registered user
     /// </summary>
     /// <remarks>
@@ -49,7 +76,7 @@ public class UserController : ControllerBase
     /// <returns>A token that can be used to validate authenticated requests.</returns>
     [HttpPost("login")]
     [SwaggerOperation(Summary = "Login a registered user", OperationId = "Login")]
-    public async Task<IActionResult> Login([FromBody] UserDTO loginDto)
+    public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
     {
         try
         {

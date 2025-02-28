@@ -11,7 +11,7 @@ if (-Not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
     try {
         & powershell.exe -ExecutionPolicy Bypass -File $dotNetInstallerPath -Channel 8.0
         Write-Host ".NET SDK installation completed."
-    }
+}
     catch {
         Write-Error "Error during .NET SDK installation: $($_.Exception.Message)"
     }
@@ -48,10 +48,10 @@ if (-Not (Get-Command sqlcmd -ErrorAction SilentlyContinue)) {
 }
 else
 {
-  # Create or overwrite the appsettings.json
-  $appSettingsPath = "ForeignExchange/appsettings.json"
+# Create or overwrite the appsettings.json
+$appSettingsPath = "ForeignExchange/appsettings.json"
 @"
- {
+{
   "ConnectionStrings": {
     "DefaultConnection": "Server=YOUR_SERVER;Database=ForeignExchange;Integrated Security=True;TrustServerCertificate=True;"
   },
@@ -102,21 +102,20 @@ else
       Write-Warning ".NET SDK not found. dotnet-ef will not be installed. Please execute the script again when the it was solved!"
   }
 
-  # Restore project dependencies
-  Write-Host "Restoring project dependencies..."
-  dotnet restore
+# Restore project dependencies
+Write-Host "Restoring project dependencies..."
+dotnet restore
 
-  # Remove existing migrations
-  Write-Host "Removing existing migrations..."
-  dotnet ef migrations remove --project ForeignExchange/ForeignExchange.csproj --startup-project ForeignExchange/ForeignExchange.csproj -y
+# Remove existing migrations
+Write-Host "Removing existing migrations..."
+dotnet ef migrations remove --project ForeignExchange.Infrastructure/ForeignExchange.Infrastructure.csproj --startup-project ForeignExchange/ForeignExchange.csproj -y
 
-  # Create a new migration
-  Write-Host "Creating new migration..."
-  dotnet ef migrations add InitialCreate --project ForeignExchange/ForeignExchange.csproj --startup-project ForeignExchange/ForeignExchange.csproj
+# Create a new migration
+Write-Host "Creating new migration..."
+dotnet ef migrations add InitialCreate --project ForeignExchange.Infrastructure/ForeignExchange.Infrastructure.csproj --startup-project ForeignExchange/ForeignExchange.csproj
 
-  # Update the database with the new migration
-  Write-Host "Updating the database..."
-  dotnet ef database update --project ForeignExchange/ForeignExchange.csproj --startup-project ForeignExchange/ForeignExchange.csproj
+# Update the database with the new migration
+Write-Host "Updating the database..."
+dotnet ef database update --project ForeignExchange.Infrastructure/ForeignExchange.Infrastructure.csproj --startup-project ForeignExchange/ForeignExchange.csproj
 
-  Write-Host "Script executed successfully! The application is configured."
-}
+Write-Host "Script executed successfully! The application is configured."

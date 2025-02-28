@@ -11,6 +11,7 @@ using ForeignExchange.Application.EventHandlers;
 using ForeignExchange.Domain.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +55,7 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT"
     });
 
+    c.EnableAnnotations();
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         { 

@@ -2,6 +2,7 @@ using ForeignExchange.Application.DTOs;
 using ForeignExchange.Application.Interfaces;
 using ForeignExchange.Domain.Entities;
 using ForeignExchange.Infrastructure.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ForeignExchange.Application.Services
 {
@@ -25,6 +26,25 @@ namespace ForeignExchange.Application.Services
                 PasswordHash = _passwordHasherService.HashPassword(userDto.Password)
             };
             return await _userRepository.RegisterUserAsync(user);
+        }
+
+        public async Task<bool> DeleteUserAsync(string user)
+        {
+            User userToDelete = null;
+            if (!user.IsNullOrEmpty())
+            {
+                userToDelete = await _userRepository.GetUserByUsernameAsync(user);
+                if (userToDelete != null)
+                {
+                    userToDelete = await _userRepository.GetUserByEmailAsync(user);
+                }
+                else
+                    throw new Exception();
+            }
+            else
+                throw new Exception();
+                
+            return await _userRepository.DeleteUserAsync(userToDelete);
         }
     }
 }
