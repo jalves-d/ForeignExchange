@@ -30,7 +30,7 @@ services:
       - JwtSettings__Issuer=swagger-test
       - JwtSettings__Audience=swagger-users
       - JwtSettings__ExpirationTime=3600
-      - AlphaVantage__ApiKey=KEY
+      - AlphaVantage__ApiKey=41O60PVJPCW4F6FN
       - AlphaVantage__BaseUrl=https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={0}&to_currency={1}&apikey={2}  
       - AzureServiceBus__ConnectionString=Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key
       - AzureServiceBus__QueueName=exchange-rates-queue
@@ -40,4 +40,4 @@ services:
       - EncryptHashing__Pepper=YourSuperSecureSecretKey
     command: >
       sh -c "dotnet ef database update --project ForeignExchange.Infrastructure/ForeignExchange.Infrastructure.csproj --startup-project ForeignExchange/ForeignExchange.csproj &&
-      dotnet ForeignExchange.dll"
+      dotnet /app/publish/ForeignExchange.dll"
