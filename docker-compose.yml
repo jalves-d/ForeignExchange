@@ -8,11 +8,6 @@ services:
       - SA_PASSWORD=Your_Strong_Password_123
     ports:
       - "1433:1433"
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -U sa -P Your_Strong_Password_123 -Q 'SELECT 1' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   foreignexchange:
     build: 
@@ -22,15 +17,14 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      sqlserver:
-        condition: service_healthy
+      - sqlserver
     environment:
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ForeignExchange;User=sa;Password=Your_Strong_Password_123;TrustServerCertificate=True
       - JwtSettings__SecretKey=pM6+Nw8zFfV1J3hYBvLq9E5X4a7UoCmK4sG2RkTzPdQ=
       - JwtSettings__Issuer=swagger-test
       - JwtSettings__Audience=swagger-users
       - JwtSettings__ExpirationTime=3600
-      - AlphaVantage__ApiKey=41O60PVJPCW4F6FN
+      - AlphaVantage__ApiKey=KEY
       - AlphaVantage__BaseUrl=https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={0}&to_currency={1}&apikey={2}  
       - AzureServiceBus__ConnectionString=Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key
       - AzureServiceBus__QueueName=exchange-rates-queue

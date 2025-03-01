@@ -6,7 +6,8 @@ namespace ForeignExchange.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<bool> RegisterUserAsync(UserDTO userDto);
-        Task<bool> DeleteUserAsync(string user);
+        Task RegisterUserAsync(UserDTO userDto);
+        Task DeleteUserAsync(string user);
+        Task DeleteUserAsync();
     }
 }

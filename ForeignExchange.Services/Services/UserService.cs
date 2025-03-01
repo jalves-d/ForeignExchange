@@ -2,7 +2,9 @@ using ForeignExchange.Application.DTOs;
 using ForeignExchange.Application.Interfaces;
 using ForeignExchange.Domain.Entities;
 using ForeignExchange.Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace ForeignExchange.Application.Services
 {
@@ -10,14 +12,16 @@ namespace ForeignExchange.Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasherService _passwordHasherService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IUserRepository userRepository, IPasswordHasherService passwordHasherService)
+        public UserService(IUserRepository userRepository, IPasswordHasherService passwordHasherService, IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
             _passwordHasherService = passwordHasherService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<bool> RegisterUserAsync(UserDTO userDto)
+        public async Task RegisterUserAsync(UserDTO userDto)
         {
             var user = new User
             {
@@ -25,10 +29,10 @@ namespace ForeignExchange.Application.Services
                 Email = userDto.Email,
                 PasswordHash = _passwordHasherService.HashPassword(userDto.Password)
             };
-            return await _userRepository.RegisterUserAsync(user);
+            await _userRepository.RegisterUserAsync(user);
         }
 
-        public async Task<bool> DeleteUserAsync(string user)
+        public async Task DeleteUserAsync(string user)
         {
             User userToDelete = null;
             if (!user.IsNullOrEmpty())
@@ -44,7 +48,25 @@ namespace ForeignExchange.Application.Services
             else
                 throw new Exception();
                 
-            return await _userRepository.DeleteUserAsync(userToDelete);
+            await _userRepository.DeleteUserAsync(userToDelete);
         }
+        private string? GetLoggedUsername()
+        {
+            return _httpContextAccessor.HttpContext?.User?.FindFirst("username")?.Value;
+        }
+
+        public async Task DeleteUserAsync()
+        {
+            try { 
+                var user = await _userRepository.GetUserByUsernameAsync(GetLoggedUsername());
+
+                await _userRepository.DeleteUserAsync(user);
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
     }
 }

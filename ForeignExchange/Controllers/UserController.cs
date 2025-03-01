@@ -42,17 +42,16 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Delete an exchange rate
+    /// Delete a specified user
     /// </summary>
     /// <remarks>
-    /// This endpoint deletes an exchange rate for the specified currency pair.
+    /// This endpoint deletes a specified user.
     /// </remarks>
-    /// <param name="baseCurrency">The base currency code.</param>
-    /// <param name="quoteCurrency">The quote currency code.</param>
-    /// <returns>Confirmation of the deleted exchange rate.</returns>
+    /// <param name="user">The user email or username.</param>
+    /// <returns>Confirmation of the deleted the user.</returns>
     [HttpDelete("{user}")]
     [Authorize]
-    [SwaggerOperation(Summary = "Delete an user", OperationId = "DeleteUser")]
+    [SwaggerOperation(Summary = "Delete a specified user", OperationId = "DeleteUser")]
     public async Task<IActionResult> DeleteUser(string user)
     {
         try
@@ -63,6 +62,57 @@ public class UserController : ControllerBase
         catch (Exception ex)
         {
             return NotFound("User was not deleted due to error: " + ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Update an existing exchange rate
+    /// </summary>
+    /// <remarks>
+    /// This endpoint updates an existing exchange rate with new data.
+    /// </remarks>
+    /// <param name="rateDto">The exchange rate data transfer object.</param>
+    /// <returns>Confirmation of the updated exchange rate.</returns>
+    //[HttpPut]
+    //[Authorize]
+    //[SwaggerOperation(Summary = "Update an existing exchange rate", OperationId = "UpdateRate")]
+    //public async Task<IActionResult> UpdateRate(string rateDto)
+    //{
+    //    if (!ModelState.IsValid)
+    //    {
+    //        return BadRequest(ModelState);
+    //    }
+    //    try
+    //    {
+    //        await _userService.UpdateUsernameAsync(rateDto);
+    //        return Ok("Currency pair " + rateDto.BaseCurrency + "/" + rateDto.QuoteCurrency + " was updated!");
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return NotFound("Update not completed due to error: " + ex.Message);
+    //    }
+    //}
+
+    /// <summary>
+    /// Delete my own registration
+    /// </summary>
+    /// <remarks>
+    /// This endpoint deletes the user registration.
+    /// </remarks>
+    /// <returns>Confirmation of the deleted my registration.</returns>
+    [HttpDelete]
+    [Authorize]
+    [SwaggerOperation(Summary = "Delete my own registration", OperationId = "DeleteMyRegistration")]
+    public async Task<IActionResult> DeleteMyRegistration()
+    {
+        try
+        {
+            await _userService.DeleteUserAsync();
+            return Ok("Your user was deleted!");
+        }
+        catch (Exception ex)
+        {
+            return NotFound("Registration was not deleted due to error: " + ex.Message);
         }
     }
 
