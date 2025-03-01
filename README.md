@@ -1,136 +1,101 @@
 # ForeignExchange Application
 
 ## Overview
-The ForeignExchange application is a .NET-based application that provides currency exchange functionalities. This README will guide you through the steps to configure the application using a PowerShell script and get it running on your local machine.
+The ForeignExchange application is a .NET-based application that provides currency exchange functionalities. This README will guide you through the steps to configure and run the application on your local machine, whether you're using Windows or Linux.
 
 ## Prerequisites
-Before running the script, ensure that you have the following:
+Before proceeding, ensure that you have the following installed:
 
-- A Windows operating system.
-- Administrative privileges to install software.
-- PowerShell available on your system (comes pre-installed on Windows).
+- Docker Desktop: Required for containerization.
+- Git: (Optional) Recommended for cloning the repository.
 
 ## Configuration Steps
 
 ### 1. Clone the Repository
- - Clone the ForeignExchange repository to your local machine using Git or download it in Zip format and extract it:
+ - Clone the ForeignExchange repository to your local machine using Git or download it as a ZIP file and extract it:
 
 ```powershell
 git clone <repository-url>
 cd ForeignExchange
 ```
 
-### 2. Open PowerShell
- - Navigate to the directory of your cloned project in PowerShell. You can do this by right-clicking on the folder and selecting “Open PowerShell window here” or using the cd command.
- - Execute the command in a PowerShell window with Administrative privileges to ensure you gonna have permission to run the script, remmind to fix it later
-```powershell
-Set-ExecutionPolicy Unrestricted -Scope CurrentUser
+### 2. Configure Environment Variables in docker-compose.yml
+ - Navigate to the directory of your cloned project. Edit the docker-compose.yml file and change the required fields.
+
+```yaml
+services:
+  # ... other services ...
+  foreignexchange:
+    # ... build and other configs ...
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ForeignExchange;User=sa;Password=Your_Strong_Password_123;TrustServerCertificate=True
+      - JwtSettings__SecretKey=YOUR_SECRET_KEY
+      - JwtSettings__Issuer=swagger-test
+      - JwtSettings__Audience=swagger-users
+      - JwtSettings__ExpirationTime=3600
+      - AlphaVantage__ApiKey=YOUR_API_KEY
+      - AlphaVantage__BaseUrl=https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={0}&to_currency={1}&apikey={2}
+      - AzureServiceBus__ConnectionString=Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key
+      - AzureServiceBus__QueueName=exchange-rates-queue
+      - EncryptHashing__SaltSize=16
+      - EncryptHashing__IterationCount=10000
+      - EncryptHashing__KeySize=32
+      - EncryptHashing__Pepper=YOUR_PEPPER
 ```
 
-### 3. Edit the Configuration Script
-### This script will perform the following actions:
-
-- Check if the .NET SDK is installed. If not, it will download and install the latest version.
-- Check if SQL Server Express is installed. If not, it will download and install it.
-- Prompt you for the SQL Server instance name if SQL Server is not found on your machine.
-- Create or overwrite the appsettings.json file with the appropriate connection string.
-- Restore project dependencies.
-- Remove any existing migrations.
-- Create a new migration.
-- Update the database with the new migration.
-
-### 4. Configure the appsettings information defined on the Configuration Script
-
- - Before running the application, ensure that the appsettings.json file is configured correctly. Here is an example structure of the appsettings.json file:
-```json
- {
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=YOUR_SERVER;Database=ForeignExchange;Integrated Security=True;TrustServerCertificate=True;"
-  },
-  "JwtSettings": {
-    "SecretKey": "YOUR_SECRET_KEY",
-    "Issuer": "swagger-test",
-    "Audience": "swagger-users",
-    "ExpirationTime": 3600
-  },
-  "AlphaVantage": {
-    "ApiKey": "YOUR_API_KEY",
-    "BaseUrl": "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={0}&to_currency={1}&apikey={2}"
-  },
-  "AzureServiceBus": {
-    "ConnectionString": "YOUR_AZURE_SERVICE_BUS_CONNECTION_STRING",
-    "QueueName": "exchange-rates-queue"
-  },
-  "EncryptHashing": {
-    "SaltSize": 16,
-    "IterationCount": 10000,
-    "KeySize": 32,
-    "Pepper": "YOUR_PEPPER"
-  },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning",
-      "Microsoft.Hosting.Lifetime": "Information"
-    }
-  },
-  "AllowedHosts": "*"
-}
-```
-
-### The script try to install SQL Server if you dont have installed, after the installation you gonna need to execute setup.ps1 more one time.
-
-- YOUR_SERVER: Replace with the name of your SQL Server instance. You can verify your server name using SQL Server Management Studio;
 - YOUR_SECRET_KEY: Use a strong secret key for JWT token generation. Choose a key with more then 32 digits.
 - YOUR_API_KEY: Replace with your Alpha Vantage API key. To get your free key (https://www.alphavantage.co/support/#api-key)
 - YOUR_AZURE_SERVICE_BUS_CONNECTION_STRING: Add your Azure Service Bus connection string. This is not available use (Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key)
 - YOUR_PEPPER: Use a strong pepper value for hashing.
 
-### 5. Execute the Configuration Script
- - Execute the configuration script by running:
+### Some of the database definitions are made in Dockerfile too, the best practice is to store all your keys in a .env file for application security reasons. (It wasn't made in this project to let him the most easiest runnable possible).
+
+### 3. Build and Run the Application with Docker Compose
+### Use Docker Compose to build and run the application:
 
 ```powershell
-.\setup.ps1
+docker-compose up --build -d
 ```
 
-### 6. Run the Application and Restore the ExecutionPolicy
- - After the script completes successfully, you can run the application with the following command:
+### This command will:
+- Build the Docker image using the provided Dockerfile.
+- Start the SQL Server and ForeignExchange containers in detached mode (-d).
+- Apply database migrations and start the application using the command defined in docker-compose.yml.
+- Access the application at http://localhost:8080/swagger/index.html (or the configured port in your Dockerfile).
+
+
+
+### 4. Run Tests
+## To run tests for the application, execute the following command inside the container:
 
 ```powershell
-Set-ExecutionPolicy Restricted -Scope CurrentUser
-dotnet run --project ForeignExchange/ForeignExchange.csproj
-```
-
-## This command will start the application, and you can access it at http://localhost:5218/swagger/index.html (or the configured port).
-
-### 7. Testing the Application
-- To run tests for the application:=
-- Navigate to the ForeignExchange.Tests directory.
-- Run the following command:
-
-```powershell
-dotnet test
+docker-compose exec foreignexchange dotnet test
 ```
 
 ## This command will execute the test cases defined in your project.
 
 ### 8. Troubleshooting
-- If you encounter issues with SQL Server, ensure it is running and that the connection string in appsettings.json is correct.
-- Check PowerShell execution policies if you have issues running scripts. You might need to set the policy to allow script execution:
+- SQL Server Issues: Ensure SQL Server is running and accessible from within the Docker container. Check the Docker Compose logs for any errors.
 
 ```powershell
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+docker-compose logs sqlserver
 ```
+
+- Application Startup Issues: Check the Docker Compose logs for any errors during application startup.
+
+```powershell
+docker-compose logs foreignexchange
+```
+
+- Migration Issues: if the migrations fail, review the logs from the foreignexchange container.
 
 ### 9. Limitations
  - Service Bus Integration Issues:
     There have been difficulties in creating an account on Azure Service Bus, which may hinder event-driven features. The module requires testing and correction to ensure reliable communication and message handling.
  
- - Project Structure:
-    The current organization of the project uses folders to separate components, which can lead to confusion as the project scales. Without a clear separation of concerns, maintenance and understanding of the codebase may become challenging.
-
  - Validation Handling:
     The absence of a centralized validation approach may lead to repetitive validation logic across different parts of the application. This could lead to inconsistencies and make it harder to manage changes to validation rules.
+
  - Error Handling:
     The current implementation might not handle errors effectively, particularly when required fields are missing. This could lead to unhandled exceptions and poor user experience.
 
@@ -140,9 +105,6 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ### 10. Possible Improvements
  - Service Bus Testing and Correction:
     Prioritize testing the Service Bus integration to identify and resolve any issues. Consider implementing retry policies and logging to facilitate troubleshooting.
-
- - Project Layering:
-    Refactor the project structure to use layers (e.g., Presentation, Application, Domain, Infrastructure) instead of just folders. This can enhance clarity and modularity, making it easier to manage dependencies and maintain the code.
 
  - Implement FluentValidation:
     Introduce FluentValidation to streamline the validation process. This would help reduce repetitive code, centralize validation logic, and provide more expressive error messages.
