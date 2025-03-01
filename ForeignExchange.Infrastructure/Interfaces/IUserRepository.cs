@@ -8,5 +8,7 @@ namespace ForeignExchange.Infrastructure.Interfaces
         Task<User> GetUserByUsernameAsync(string username);
         Task<User> GetUserByEmailAsync(string email);
         Task<bool> RegisterUserAsync(User userDto);
+
+        Task<bool> DeleteUserAsync(User user);
     }
 }
