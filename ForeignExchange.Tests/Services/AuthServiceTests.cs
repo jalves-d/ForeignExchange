@@ -9,6 +9,7 @@ using ForeignExchange.Domain.Entities;
 using ForeignExchange.Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using ForeignExchange.Application.Interfaces;
+using ForeignExchange.Application.Services;
 
 namespace ForeignExchange.Tests.Services
 {
@@ -39,10 +40,10 @@ namespace ForeignExchange.Tests.Services
         public async Task AuthenticateAsync_ShouldReturnToken_WhenCredentialsAreValid()
         {
             // Arrange
-            var loginDTO = new UserDTO { Username = "testUser", Password = "password123" };
+            var loginDTO = new LoginDTO { Login = "testUser", Password = "password123" };
             var user = new User { Id = Guid.NewGuid(), Username = "testUser", PasswordHash = "hashedPassword" };
 
-            _userRepositoryMock.Setup(u => u.GetUserByUsernameAsync(loginDTO.Username)).ReturnsAsync(user);
+            _userRepositoryMock.Setup(u => u.GetUserByUsernameAsync(loginDTO.Login)).ReturnsAsync(user);
             _passwordHasherServiceMock.Setup(p => p.VerifyPassword(loginDTO.Password, user.PasswordHash)).Returns(true);
 
             // Act
@@ -56,9 +57,9 @@ namespace ForeignExchange.Tests.Services
         public async Task AuthenticateAsync_ShouldThrowException_WhenUsernameNotFound()
         {
             // Arrange
-            var loginDTO = new UserDTO { Username = "nonExistentUser", Password = "password123" };
+            var loginDTO = new LoginDTO { Login = "nonExistentUser", Password = "password123" };
 
-            _userRepositoryMock.Setup(u => u.GetUserByUsernameAsync(loginDTO.Username)).ReturnsAsync((User)null);
+            _userRepositoryMock.Setup(u => u.GetUserByUsernameAsync(loginDTO.Login)).ReturnsAsync((User)null);
 
             // Act
             Func<Task> act = async () => await _authService.AuthenticateAsync(loginDTO);
@@ -72,9 +73,9 @@ namespace ForeignExchange.Tests.Services
         public async Task AuthenticateAsync_ShouldThrowException_WhenEmailNotFound()
         {
             // Arrange
-            var loginDTO = new UserDTO { Email = "nonExistentEmail@test.com", Password = "password123" };
+            var loginDTO = new LoginDTO { Login = "nonExistentEmail@test.com", Password = "password123" };
 
-            _userRepositoryMock.Setup(u => u.GetUserByEmailAsync(loginDTO.Email)).ReturnsAsync((User)null);
+            _userRepositoryMock.Setup(u => u.GetUserByEmailAsync(loginDTO.Login)).ReturnsAsync((User)null);
 
             // Act
             Func<Task> act = async () => await _authService.AuthenticateAsync(loginDTO);
@@ -88,10 +89,10 @@ namespace ForeignExchange.Tests.Services
         public async Task AuthenticateAsync_ShouldThrowException_WhenPasswordIsInvalid()
         {
             // Arrange
-            var loginDTO = new UserDTO { Username = "testUser", Password = "wrongPassword" };
+            var loginDTO = new LoginDTO { Login = "testUser", Password = "wrongPassword" };
             var user = new User { Id = Guid.NewGuid(), Username = "testUser", PasswordHash = "hashedPassword" };
 
-            _userRepositoryMock.Setup(u => u.GetUserByUsernameAsync(loginDTO.Username)).ReturnsAsync(user);
+            _userRepositoryMock.Setup(u => u.GetUserByUsernameAsync(loginDTO.Login)).ReturnsAsync(user);
             _passwordHasherServiceMock.Setup(p => p.VerifyPassword(loginDTO.Password, user.PasswordHash)).Returns(false);
 
             // Act

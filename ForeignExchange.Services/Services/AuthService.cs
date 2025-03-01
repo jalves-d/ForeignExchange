@@ -7,8 +7,11 @@ using ForeignExchange.Application.Interfaces;
 using ForeignExchange.Application.DTOs;
 using ForeignExchange.Domain.Entities;
 using ForeignExchange.Application.Exceptions;
+using Microsoft.Extensions.Configuration;
 
-public class AuthService : IAuthService
+namespace ForeignExchange.Application.Services
+{
+    public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasherService _passwordHasherService;
@@ -22,21 +25,15 @@ public class AuthService : IAuthService
     }
 
 
-    public async Task<string> AuthenticateAsync(UserDTO loginDTO)
+    public async Task<string> AuthenticateAsync(LoginDTO loginDTO)
     {
         User user = null;
 
-        if (loginDTO.Username != null)
+        if (loginDTO.Login != null)
         {
-            user = await _userRepository.GetUserByUsernameAsync(loginDTO.Username);
-            if (user == null && loginDTO.Email == null)
-                throw new InvalidCredentialCustomException("Invalid credentials, username not found!");
-        }
-        else if (loginDTO.Email != null)
-        {
-            user = await _userRepository.GetUserByEmailAsync(loginDTO.Email);
+            user = await _userRepository.GetUserByUsernameAsync(loginDTO.Login);
             if (user == null)
-                throw new InvalidCredentialCustomException("Invalid credentials, email not found!");
+                user = await _userRepository.GetUserByEmailAsync(loginDTO.Login);
         }
 
         if (user != null && _passwordHasherService.VerifyPassword(loginDTO.Password, user.PasswordHash))
@@ -69,5 +66,5 @@ public class AuthService : IAuthService
             throw new InvalidCredentialCustomException("Invalid credentials!");
         }
     }
-
+    }
 }

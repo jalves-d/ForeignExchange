@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
 using ForeignExchange.Application.DTOs;
+using ForeignExchange.Domain.Entities;
 
 namespace ForeignExchange.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<bool> RegisterUserAsync(UserDTO userDto);
+        Task RegisterUserAsync(UserDTO userDto);
+        Task DeleteUserAsync(string user);
+        Task DeleteUserAsync();
     }
 }

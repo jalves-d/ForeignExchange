@@ -11,6 +11,7 @@ using ForeignExchange.Application.EventHandlers;
 using ForeignExchange.Domain.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
 
 // Register application services
 builder.Services.AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
@@ -54,6 +56,7 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT"
     });
 
+    c.EnableAnnotations();
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         { 

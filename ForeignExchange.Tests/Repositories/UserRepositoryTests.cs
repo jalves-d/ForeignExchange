@@ -21,8 +21,7 @@ namespace ForeignExchange.Tests.Repositories
                 .Options;
 
             _context = new AppDbContext(options);
-            _passwordHasherServiceMock = new Mock<IPasswordHasherService>();
-            _repository = new UserRepository(_context, _passwordHasherServiceMock.Object);
+            _repository = new UserRepository(_context);
         }
 
         [Fact]
@@ -71,7 +70,7 @@ namespace ForeignExchange.Tests.Repositories
         public async Task RegisterUserAsync_ShouldReturnTrue_WhenSuccessful()
         {
             // Arrange
-            var userDto = new UserDTO { Username = "newuser", Email = "newuser@example.com", Password = "password" };
+            var userDto = new User { Username = "newuser", Email = "newuser@example.com", PasswordHash = "password" };
             _passwordHasherServiceMock.Setup(m => m.HashPassword(It.IsAny<string>())).Returns("hashedpassword");
 
             // Act
@@ -92,7 +91,7 @@ namespace ForeignExchange.Tests.Repositories
             _context.Users.Add(existingUser);
             await _context.SaveChangesAsync();
 
-            var userDto = new UserDTO { Username = "existinguser", Email = "newuser@example.com", Password = "password" };
+            var userDto = new User { Username = "existinguser", Email = "newuser@example.com", PasswordHash = "password" };
             _passwordHasherServiceMock.Setup(m => m.HashPassword(It.IsAny<string>())).Returns("hashedpassword");
 
             // Act

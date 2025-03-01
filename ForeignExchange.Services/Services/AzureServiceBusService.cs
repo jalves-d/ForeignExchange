@@ -1,9 +1,12 @@
 using Azure.Messaging.ServiceBus;
 using ForeignExchange.Application.Interfaces;
 using ForeignExchange.Domain.Events;
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
-public class AzureServiceBusService : IMessageService
+namespace ForeignExchange.Application.Services
+{
+    public class AzureServiceBusService : IMessageService
 {
     private readonly string _connectionString;
     private readonly string _queueName;
@@ -55,4 +58,5 @@ public class AzureServiceBusService : IMessageService
     {
         _handlers.Add(handler);
     }
+}
 }
