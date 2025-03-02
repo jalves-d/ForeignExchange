@@ -45,7 +45,6 @@ services:
 
 - YOUR_SECRET_KEY: Use a strong secret key for JWT token generation. Choose a key with more then 32 digits.
 - YOUR_API_KEY: Replace with your Alpha Vantage API key. To get your free key (https://www.alphavantage.co/support/#api-key)
-- YOUR_AZURE_SERVICE_BUS_CONNECTION_STRING: Add your Azure Service Bus connection string. This is not available use (Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key)
 - YOUR_PEPPER: Use a strong pepper value for hashing.
 
 ### Some of the database definitions are made in Dockerfile too, the best practice is to store all your keys in a .env file for application security reasons. (It wasn't made in this project to let him the most easiest runnable possible).
@@ -92,9 +91,6 @@ docker-compose logs foreignexchange
 ### 9. Limitations
  - Service Bus Integration Issues:
     There have been difficulties in creating an account on Azure Service Bus, which may hinder event-driven features. The module requires testing and correction to ensure reliable communication and message handling.
- 
- - Validation Handling:
-    The absence of a centralized validation approach may lead to repetitive validation logic across different parts of the application. This could lead to inconsistencies and make it harder to manage changes to validation rules.
 
  - Error Handling:
     The current implementation might not handle errors effectively, particularly when required fields are missing. This could lead to unhandled exceptions and poor user experience.
@@ -105,9 +101,6 @@ docker-compose logs foreignexchange
 ### 10. Possible Improvements
  - Service Bus Testing and Correction:
     Prioritize testing the Service Bus integration to identify and resolve any issues. Consider implementing retry policies and logging to facilitate troubleshooting.
-
- - Implement FluentValidation:
-    Introduce FluentValidation to streamline the validation process. This would help reduce repetitive code, centralize validation logic, and provide more expressive error messages.
 
  - Global Error Handling:
     Implement a global error handler (middleware) to catch exceptions and handle errors in a user-friendly manner. This should include returning appropriate HTTP status codes and messages for validation errors and other issues.
