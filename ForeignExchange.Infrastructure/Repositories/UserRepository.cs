@@ -36,23 +36,26 @@ namespace ForeignExchange.Infrastructure.Repositories
             return true;
         }
 
-        public async Task<bool> RegisterUserAsync(User newUser)
+        public async Task RegisterUserAsync(User newUser)
         {
             // Check if the username or email already exists
-            if (await _context.Users.AnyAsync(u => u.Username == newUser.Username || u.Email == newUser.Username))
+            if (!await _context.Users.AnyAsync(u => u.Username == newUser.Username || u.Email == newUser.Username || u.Email == newUser.Email))
             {
-                return false;
+                try
+                {
+                    await _context.Users.AddAsync(newUser);
+
+                    await _context.SaveChangesAsync();
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception("Register User process failed due to:" + ex.Message);
+                }
             }
-            else if (await _context.Users.AnyAsync(u => u.Email == newUser.Email))
+            else
             {
-                return false; 
+                throw new Exception("Invalid credentials! Email or Username in use."); 
             }
-
-            await _context.Users.AddAsync(newUser);
-
-            await _context.SaveChangesAsync();
-
-            return true;
         }
 
         public async Task<bool> UpdateUserEmailAsync(User user, string newEmail)
