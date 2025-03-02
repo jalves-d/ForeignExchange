@@ -12,6 +12,10 @@ using ForeignExchange.Domain.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Options;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using ForeignExchange.Application.DTOs;
+using ForeignExchange.Application.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddFluentValidationAutoValidation();
 // Register application services
 builder.Services.AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
 builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
@@ -29,6 +33,14 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IForexProviderRepository, AlphaVantageRepository>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+builder.Services.AddScoped<IValidationService, ValidationService>();
+
+// Register application validations
+builder.Services.AddScoped<IValidator<UserDTO>, UserValidator>();
+builder.Services.AddScoped<IValidator<LoginDTO>, LoginValidator>();
+builder.Services.AddScoped<IValidator<string>, StringValidator>();
+builder.Services.AddScoped<IValidator<ExchangeRateDTO>, ExchangeRateValidator>();
+
 
 // Register MessageService and Event Handlers
 builder.Services.AddScoped<IMessageService, AzureServiceBusService>(); 

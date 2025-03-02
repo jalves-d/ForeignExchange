@@ -1,4 +1,5 @@
-﻿using ForeignExchange.Domain.Entities;
+﻿using FluentValidation;
+using ForeignExchange.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace ForeignExchange.Application.DTOs

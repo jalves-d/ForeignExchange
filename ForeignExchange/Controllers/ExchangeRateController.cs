@@ -1,12 +1,8 @@
 using ForeignExchange.Application.DTOs;
 using ForeignExchange.Application.Interfaces;
-using ForeignExchange.Domain.Exceptions;
-using ForeignExchange.Infrastructure.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ForeignExchange.Controllers
 {
@@ -15,10 +11,12 @@ namespace ForeignExchange.Controllers
     public class ExchangeRateController : ControllerBase
     {
         private readonly IExchangeRateService _exchangeRateService;
+        private readonly IValidationService _validationService;
 
-        public ExchangeRateController(IExchangeRateService exchangeRateService)
+        public ExchangeRateController(IExchangeRateService exchangeRateService, IValidationService validationService)
         {
             _exchangeRateService = exchangeRateService;
+            _validationService = validationService;
         }
 
 
@@ -60,6 +58,12 @@ namespace ForeignExchange.Controllers
         [SwaggerOperation(Summary = "Get exchange rate for a specific currency pairs", OperationId = "GetRate")]
         public async Task<IActionResult> GetRate(string baseCurrency, string quoteCurrency)
         {
+            var validationResult = await _validationService.ValidateAsync(baseCurrency);
+            if (validationResult != null)
+                return validationResult;
+            var validationResultQc = await _validationService.ValidateAsync(quoteCurrency);
+            if (validationResultQc != null)
+                return validationResultQc;
             try
             {
                 var rate = await _exchangeRateService.GetExchangeRateAsync(baseCurrency + "-" + quoteCurrency);
@@ -84,10 +88,9 @@ namespace ForeignExchange.Controllers
         [SwaggerOperation(Summary = "Create a new exchange rate", OperationId = "CreateNewRate")]
         public async Task<IActionResult> CreateNewRate([FromBody] ExchangeRateDTO rateDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _validationService.ValidateAsync(rateDto);
+            if (validationResult != null)
+                return validationResult;
             try
             {
                 await _exchangeRateService.AddRateAsync(rateDto);
@@ -112,10 +115,9 @@ namespace ForeignExchange.Controllers
         [SwaggerOperation(Summary = "Update an existing exchange rate", OperationId = "UpdateRate")]
         public async Task<IActionResult> UpdateRate([FromBody] ExchangeRateDTO rateDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var validationResult = await _validationService.ValidateAsync(rateDto);
+            if (validationResult != null)
+                return validationResult;
             try
             {
                 await _exchangeRateService.UpdateRateAsync(rateDto);
@@ -141,6 +143,12 @@ namespace ForeignExchange.Controllers
         [SwaggerOperation(Summary = "Delete an exchange rate", OperationId = "DeleteRate")]
         public async Task<IActionResult> DeleteRate(string baseCurrency, string quoteCurrency)
         {
+            var validationResult = await _validationService.ValidateAsync(baseCurrency);
+            if (validationResult != null)
+                return validationResult;
+            var validationResultQc = await _validationService.ValidateAsync(quoteCurrency);
+            if (validationResultQc != null)
+                return validationResultQc;
             try
             {
                 var success = await _exchangeRateService.DeleteRateAsync(baseCurrency + "-" + quoteCurrency);
@@ -166,6 +174,12 @@ namespace ForeignExchange.Controllers
         [SwaggerOperation(Summary = "Get the latest exchange rate", OperationId = "GetLatestRate")]
         public async Task<IActionResult> GetLatestRate(string baseCurrency, string quoteCurrency)
         {
+            var validationResult = await _validationService.ValidateAsync(baseCurrency);
+            if (validationResult != null)
+                return validationResult;
+            var validationResultQc = await _validationService.ValidateAsync(quoteCurrency);
+            if (validationResultQc != null)
+                return validationResultQc;
             try
             {
                 var newRate = await _exchangeRateService.GetLatestRateAsync(baseCurrency + "-" + quoteCurrency);
@@ -190,6 +204,9 @@ namespace ForeignExchange.Controllers
         [SwaggerOperation(Summary = "Get exchange rate by currency pair", OperationId = "GetRateByPair")]
         public async Task<IActionResult> GetRateByPair(string currencyPair)
         {
+            var validationResult = await _validationService.ValidateAsync(currencyPair);
+            if (validationResult != null)
+                return validationResult;
             try
             {
                 var rate = await _exchangeRateService.GetExchangeRateAsync(currencyPair);
