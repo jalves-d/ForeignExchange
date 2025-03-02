@@ -23,9 +23,10 @@ namespace ForeignExchange.Infrastructure.Repositories
         {
             return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         }
-        public async Task<bool> DeleteUserAsync(User user)
+        public async Task DeleteUserAsync(User user)
         {
-            try{ 
+            try
+            { 
                 _context.Users.Remove(user);
             }
             catch (Exception) 
@@ -33,7 +34,6 @@ namespace ForeignExchange.Infrastructure.Repositories
                 throw new Exception();
             }
             await _context.SaveChangesAsync();
-            return true;
         }
 
         public async Task RegisterUserAsync(User newUser)
@@ -58,16 +58,8 @@ namespace ForeignExchange.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> UpdateUserEmailAsync(User user, string newEmail)
+        public async Task UpdateUserEmailAsync(User user, string newEmail)
         {
-            // Check if the new email already exists in the database
-            var emailExists = await _context.Users.AnyAsync(u => u.Email == newEmail && u.Id != user.Id);
-
-            if (emailExists)
-            {
-                return false; 
-            }
-
             // Update the user's email
             user.Email = newEmail;
 
@@ -77,18 +69,10 @@ namespace ForeignExchange.Infrastructure.Repositories
             // Save changes to the database
             await _context.SaveChangesAsync();
 
-            return true;
         }
 
-        public async Task<bool> UpdateUserUsernameAsync(User user, string newUsername)
+        public async Task UpdateUserUsernameAsync(User user, string newUsername)
         {
-            // Check if the new username already exists in the database
-            var usernameExists = await _context.Users.AnyAsync(u => u.Username == newUsername && u.Id != user.Id);
-            if (usernameExists)
-            {
-                return false;
-            }
-
             user.Username = newUsername;
 
             // Attach the user to the context if it is not already tracked
@@ -96,7 +80,7 @@ namespace ForeignExchange.Infrastructure.Repositories
 
             // Save changes to the database
             await _context.SaveChangesAsync();
-            return true;
+
         }
     }
 }

@@ -1,6 +1,7 @@
 using ForeignExchange.Application.DTOs;
 using ForeignExchange.Application.Interfaces;
 using ForeignExchange.Domain.Entities;
+using ForeignExchange.Domain.Exceptions;
 using ForeignExchange.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
@@ -50,6 +51,43 @@ namespace ForeignExchange.Application.Services
                 
             await _userRepository.DeleteUserAsync(userToDelete);
         }
+
+        public async Task UpdateUsernameAsync(string newUsername)
+        {
+            try
+            {
+                if (await _userRepository.GetUserByUsernameAsync(newUsername) == null)
+                {
+                    var user = await _userRepository.GetUserByUsernameAsync(GetLoggedUsername());
+                    await _userRepository.UpdateUserUsernameAsync(user, newUsername);
+                }
+                else
+                    throw new Exception("Username already in use, try a new one!");
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
+        public async Task UpdateEmailAsync(string newEmail)
+        {
+            try
+            {
+                if (await _userRepository.GetUserByEmailAsync(newEmail) == null)
+                {
+                    var user = await _userRepository.GetUserByUsernameAsync(GetLoggedUsername());
+                    await _userRepository.UpdateUserEmailAsync(user, newEmail);
+                }
+                else
+                    throw new Exception("Email already in use, try a new one!");
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
         private string? GetLoggedUsername()
         {
             return _httpContextAccessor.HttpContext?.User?.FindFirst("username")?.Value;

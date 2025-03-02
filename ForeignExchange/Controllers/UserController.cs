@@ -22,10 +22,10 @@ public class UserController : ControllerBase
     /// Register a new user
     /// </summary>
     /// <remarks>
-    /// This endpoint allows a new user to register by providing necessary information.
+    /// This endpoint allows a new user to register by providing necessary information and provides authentication.
     /// </remarks>
     /// <param name="registrationDto">The data transfer object containing user registration details.</param>
-    /// <returns>A response indicating the success of the registration.</returns>
+    /// <returns>A token that can be used to validate authenticated requests.</returns>
     [HttpPost("register")]
     [SwaggerOperation(Summary = "Register a new user", OperationId = "Register")]
     public async Task<IActionResult> RegisterUser([FromBody] UserDTO registrationDto)
@@ -33,7 +33,10 @@ public class UserController : ControllerBase
         try
         {
             await _userService.RegisterUserAsync(registrationDto);
-            return Ok();
+            var loginDto = new LoginDTO { Login = registrationDto.Username, Password = registrationDto.Password };
+            var token = await _authService.AuthenticateAsync(loginDto);
+
+            return Ok(new { Token = token });
         }
         catch (Exception ex)
         {
@@ -69,29 +72,49 @@ public class UserController : ControllerBase
     /// Update an existing exchange rate
     /// </summary>
     /// <remarks>
-    /// This endpoint updates an existing exchange rate with new data.
+    /// This endpoint updates an existing email with new data.
     /// </remarks>
-    /// <param name="rateDto">The exchange rate data transfer object.</param>
-    /// <returns>Confirmation of the updated exchange rate.</returns>
-    //[HttpPut]
-    //[Authorize]
-    //[SwaggerOperation(Summary = "Update an existing exchange rate", OperationId = "UpdateRate")]
-    //public async Task<IActionResult> UpdateRate(string rateDto)
-    //{
-    //    if (!ModelState.IsValid)
-    //    {
-    //        return BadRequest(ModelState);
-    //    }
-    //    try
-    //    {
-    //        await _userService.UpdateUsernameAsync(rateDto);
-    //        return Ok("Currency pair " + rateDto.BaseCurrency + "/" + rateDto.QuoteCurrency + " was updated!");
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return NotFound("Update not completed due to error: " + ex.Message);
-    //    }
-    //}
+    /// <param name="newUsername">The new username to your user.</param>
+    /// <returns>Confirmation of the updated username.</returns>
+    [HttpPut("update-username")]
+    [Authorize]
+    [SwaggerOperation(Summary = "Update user username", OperationId = "UpdateUsername")]
+    public async Task<IActionResult> UpdateUsername(string newUsername)
+    {
+        try
+        {
+            await _userService.UpdateUsernameAsync(newUsername);
+            return Ok("Username was updated!");
+        }
+        catch (Exception ex)
+        {
+            return NotFound("Update not completed due to error: " + ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Update user email
+    /// </summary>
+    /// <remarks>
+    /// This endpoint updates an existing email with new data.
+    /// </remarks>
+    /// <param name="newEmail">The new email to your user.</param>
+    /// <returns>Confirmation of the updated email.</returns>
+    [HttpPut("update-email")]
+    [Authorize]
+    [SwaggerOperation(Summary = "Update user email", OperationId = "UpdateEmail")]
+    public async Task<IActionResult> UpdateEmail(string newEmail)
+    {
+        try
+        {
+            await _userService.UpdateEmailAsync(newEmail);
+            return Ok("Email was updated!");
+        }
+        catch (Exception ex)
+        {
+            return NotFound("Update not completed due to error: " + ex.Message);
+        }
+    }
 
     /// <summary>
     /// Delete my own registration

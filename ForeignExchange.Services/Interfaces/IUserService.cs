@@ -9,5 +9,7 @@ namespace ForeignExchange.Application.Interfaces
         Task RegisterUserAsync(UserDTO userDto);
         Task DeleteUserAsync(string user);
         Task DeleteUserAsync();
+        Task UpdateUsernameAsync(string newUsername);
+        Task UpdateEmailAsync(string newEmail);
     }
 }
