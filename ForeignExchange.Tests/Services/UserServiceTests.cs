@@ -24,52 +24,57 @@ namespace ForeignExchange.Tests.Services
         }
 
         [Fact]
-        public async Task RegisterUserAsync_ShouldReturnTrue_WhenUserIsRegisteredSuccessfully()
+        public async Task RegisterUserAsync_ShouldHaveUserRegistered_WhenUserIsRegisteredSuccessfully()
         {
             // Arrange
-            var userDto = new Domain.Entities.User { Username = "testuser", PasswordHash = "password123" };
-            _userRepositoryMock.Setup(repo => repo.RegisterUserAsync(userDto)).ReturnsAsync(true);
+            _userRepositoryMock
+                .Setup(repo => repo.RegisterUserAsync(It.IsAny<Domain.Entities.User>()))
+                .Returns(Task.CompletedTask);
+
+            var userDto = new UserDTO { Username = "testuser", Password = "password123" };
 
             // Act
-            var user = new UserDTO { Username = "testuser", Password = "password123" };
-            var result = true;
-            try{ await _userService.RegisterUserAsync(user); }
-            catch (Exception) { result = false; };
+            await _userService.RegisterUserAsync(userDto);
 
             // Assert
-            Assert.True(result);
-            _userRepositoryMock.Verify(repo => repo.RegisterUserAsync(userDto), Times.Once);
+            _userRepositoryMock.Verify(repo => repo.RegisterUserAsync(It.IsAny<Domain.Entities.User>()), Times.Once);
         }
 
+
         [Fact]
-        public async Task RegisterUserAsync_ShouldReturnFalse_WhenUserRegistrationFails()
+        public async Task RegisterUserAsync_ShouldThrowException_WhenUserRegistrationFails()
         {
             // Arrange
             var userDto = new Domain.Entities.User { Username = "testuser", PasswordHash = "password123" };
-            _userRepositoryMock.Setup(repo => repo.RegisterUserAsync(userDto));
+
+            _userRepositoryMock
+                .Setup(repo => repo.RegisterUserAsync(It.IsAny<Domain.Entities.User>()))
+                .ThrowsAsync(new Exception("Registration failed"));
 
             var user = new UserDTO { Username = "testuser", Password = "password123" };
-            // Act
-            var result = true;
-            try { await _userService.RegisterUserAsync(user); }
-            catch (Exception) { result = false; };
 
-            // Assert
-            Assert.False(result);
-            _userRepositoryMock.Verify(repo => repo.RegisterUserAsync(userDto), Times.Once);
+            // Act & Assert
+            await Assert.ThrowsAsync<Exception>(() => _userService.RegisterUserAsync(user));
+
+            // Verifica se o repositório foi chamado corretamente
+            _userRepositoryMock.Verify(repo => repo.RegisterUserAsync(It.IsAny<Domain.Entities.User>()), Times.Once);
         }
 
         [Fact]
         public async Task RegisterUserAsync_ShouldThrowException_WhenUserRepositoryThrowsException()
         {
             // Arrange
-            var user = new Domain.Entities.User { Username = "testuser", PasswordHash = "password123" };
-            _userRepositoryMock.Setup(repo => repo.RegisterUserAsync(user)).ThrowsAsync(new System.Exception("Database error"));
+            _userRepositoryMock
+                .Setup(repo => repo.RegisterUserAsync(It.IsAny<Domain.Entities.User>()))
+                .ThrowsAsync(new System.Exception("Register User process failed due to:"));
+
+            var userDto = new UserDTO { Username = "testuser", Password = "password123" };
 
             // Act & Assert
-            var userDto = new UserDTO { Username = "testuser", Password = "password123" };
             await Assert.ThrowsAsync<System.Exception>(() => _userService.RegisterUserAsync(userDto));
-            _userRepositoryMock.Verify(repo => repo.RegisterUserAsync(user), Times.Once);
+
+            // Verifica se o repositório foi chamado corretamente
+            _userRepositoryMock.Verify(repo => repo.RegisterUserAsync(It.IsAny<Domain.Entities.User>()), Times.Once);
         }
     }
 

@@ -66,7 +66,7 @@ namespace ForeignExchange.Tests.Services
 
             // Assert
             await act.Should().ThrowAsync<InvalidCredentialCustomException>()
-                .WithMessage("Invalid credentials, username not found!");
+                .WithMessage("Invalid credentials!");
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace ForeignExchange.Tests.Services
 
             // Assert
             await act.Should().ThrowAsync<InvalidCredentialCustomException>()
-                .WithMessage("Invalid credentials, email not found!");
+                .WithMessage("Invalid credentials!");
         }
 
         [Fact]

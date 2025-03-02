@@ -1,5 +1,8 @@
-﻿using ForeignExchange.Application.DTOs;
+﻿using FluentAssertions;
+using ForeignExchange.Application.DTOs;
+using ForeignExchange.Application.Exceptions;
 using ForeignExchange.Application.Interfaces;
+using ForeignExchange.Application.Services;
 using ForeignExchange.Domain.Entities;
 using ForeignExchange.Infrastructure.Data;
 using ForeignExchange.Infrastructure.Repositories;
@@ -67,24 +70,22 @@ namespace ForeignExchange.Tests.Repositories
         }
 
         [Fact]
-        public async Task RegisterUserAsync_ShouldReturnTrue_WhenSuccessful()
+        public async Task RegisterUserAsync_ShouldSaveUserToDatabase_WhenSuccessful()
         {
             // Arrange
-            var userDto = new User { Username = "newuser", Email = "newuser@example.com", PasswordHash = "password" };
-            _passwordHasherServiceMock.Setup(m => m.HashPassword(It.IsAny<string>())).Returns("hashedpassword");
+            var user = new User { Username = "newuser", Email = "newuser@example.com", PasswordHash = "password" };
 
             // Act
-            var result = await _repository.RegisterUserAsync(userDto);
+            await _repository.RegisterUserAsync(user);
 
             // Assert
-            Assert.True(result);
-            var dbUser = await _context.Users.SingleOrDefaultAsync(u => u.Username == "newuser");
+            var dbUser = await _context.Users.SingleOrDefaultAsync(u => u.Username == user.Username);
             Assert.NotNull(dbUser);
-            Assert.Equal("newuser@example.com", dbUser.Email);
+            Assert.Equal(user.Email, dbUser.Email);
         }
 
         [Fact]
-        public async Task RegisterUserAsync_ShouldReturnFalse_WhenUsernameExists()
+        public async Task RegisterUserAsync_ShouldThrowException_WhenUsernameExists()
         {
             // Arrange
             var existingUser = new User { Username = "existinguser", Email = "existing@example.com", PasswordHash = "hashedpassword" };
@@ -92,13 +93,13 @@ namespace ForeignExchange.Tests.Repositories
             await _context.SaveChangesAsync();
 
             var userDto = new User { Username = "existinguser", Email = "newuser@example.com", PasswordHash = "password" };
-            _passwordHasherServiceMock.Setup(m => m.HashPassword(It.IsAny<string>())).Returns("hashedpassword");
 
             // Act
-            var result = await _repository.RegisterUserAsync(userDto);
+            Func<Task> act = async () => await _repository.RegisterUserAsync(userDto);
 
             // Assert
-            Assert.False(result);
+            await act.Should().ThrowAsync<Exception>()
+                .WithMessage("Invalid credentials! Email or Username in use.");
         }
 
         [Fact]
