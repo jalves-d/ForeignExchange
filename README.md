@@ -19,35 +19,51 @@ git clone <repository-url>
 cd ForeignExchange
 ```
 
-### 2. Configure Environment Variables in docker-compose.yml
- - Navigate to the directory of your cloned project. Edit the docker-compose.yml file and change the required fields.
+### 2. Create your configuration file in the ForeignExchange folder
+ - Navigate to the directory of your cloned project. Open the ForeignExchange folder. Create the appsettings.json file and change the required fields.
 
-```yaml
-services:
-  # ... other services ...
-  foreignexchange:
-    # ... build and other configs ...
-    environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ForeignExchange;User=sa;Password=Your_Strong_Password_123;TrustServerCertificate=True
-      - JwtSettings__SecretKey=YOUR_SECRET_KEY
-      - JwtSettings__Issuer=swagger-test
-      - JwtSettings__Audience=swagger-users
-      - JwtSettings__ExpirationTime=3600
-      - AlphaVantage__ApiKey=YOUR_API_KEY
-      - AlphaVantage__BaseUrl=https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={0}&to_currency={1}&apikey={2}
-      - AzureServiceBus__ConnectionString=Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key
-      - AzureServiceBus__QueueName=exchange-rates-queue
-      - EncryptHashing__SaltSize=16
-      - EncryptHashing__IterationCount=10000
-      - EncryptHashing__KeySize=32
-      - EncryptHashing__Pepper=YOUR_PEPPER
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=sqlserver;Database=ForeignExchange;User=sa;Password=Your_Strong_Password_123;TrustServerCertificate=True;"
+  },
+  "JwtSettings": {
+    "SecretKey": "YOUR_SECRET_KEY",
+    "Issuer": "swagger-test",
+    "Audience": "swagger-users",
+    "ExpirationTime": 3600
+  },
+  "AlphaVantage": {
+    "ApiKey": "YOUR_API_KEY",
+    "BaseUrl": "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={0}&to_currency={1}&apikey={2}"
+  },
+  "AzureServiceBus": {
+    "ConnectionString": "Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key",
+    "QueueName": "exchange-rates-queue"
+  },
+  "EncryptHashing": {
+    "SaltSize": 16,
+    "IterationCount": 10000,
+    "KeySize": 32,
+    "Pepper": "YOUR_PEPPER"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "AllowedHosts": "*"
+}
+
 ```
 
 - YOUR_SECRET_KEY: Use a strong secret key for JWT token generation. Choose a key with more then 32 digits.
 - YOUR_API_KEY: Replace with your Alpha Vantage API key. To get your free key (https://www.alphavantage.co/support/#api-key)
 - YOUR_PEPPER: Use a strong pepper value for hashing.
 
-### Some of the database definitions are made in Dockerfile too, the best practice is to store all your keys in a .env file for application security reasons. (It wasn't made in this project to let him the most easiest runnable possible).
+### Some of the database definitions are made in Dockerfile too, like hostname and password, the best practice is to store all your keys in a .env file for application security reasons. (It wasn't made in this project to let him the most easiest runnable possible).
 
 ### 3. Build and Run the Application with Docker Compose
 ### Use Docker Compose to build and run the application:
