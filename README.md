@@ -73,7 +73,7 @@ docker-compose exec foreignexchange dotnet test
 
 ## This command will execute the test cases defined in your project.
 
-### 8. Troubleshooting
+### 5. Troubleshooting
 - SQL Server Issues: Ensure SQL Server is running and accessible from within the Docker container. Check the Docker Compose logs for any errors.
 
 ```powershell
@@ -88,7 +88,7 @@ docker-compose logs foreignexchange
 
 - Migration Issues: if the migrations fail, review the logs from the foreignexchange container.
 
-### 9. Limitations
+### 6. Limitations
  - Service Bus Integration Issues:
     There have been difficulties in creating an account on Azure Service Bus, which may hinder event-driven features. The module requires testing and correction to ensure reliable communication and message handling.
 
@@ -98,7 +98,7 @@ docker-compose logs foreignexchange
  - Authentication Mechanisms:
     The application may be limited to a single method of authentication, which may not suit all users' needs. The lack of multi-factor authentication (MFA) could also pose security risks.
 
-### 10. Possible Improvements
+### 7. Possible Improvements
  - Service Bus Testing and Correction:
     Prioritize testing the Service Bus integration to identify and resolve any issues. Consider implementing retry policies and logging to facilitate troubleshooting.
 
