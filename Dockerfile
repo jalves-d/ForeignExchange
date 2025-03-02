@@ -10,8 +10,8 @@ RUN dotnet build "ForeignExchange/ForeignExchange.csproj" -c Release -o /app/bui
 
 RUN dotnet publish "ForeignExchange/ForeignExchange.csproj" -c Release -o /app/publish
 
-ENV DB_HOST=seu_host_sql
-ENV DB_USER=seu_usuario_sql
+ENV DB_HOST=sqlserver
+ENV DB_USER=sa
 ENV DB_PASS=Your_Strong_Password_123
 ENV PATH="$PATH:/root/.dotnet/tools"
 
