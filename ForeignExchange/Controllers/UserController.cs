@@ -1,6 +1,5 @@
 using ForeignExchange.Application.DTOs;
 using ForeignExchange.Application.Interfaces;
-using ForeignExchange.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -11,11 +10,13 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IAuthService _authService;
+    private readonly IValidationService _validationService;
 
-    public UserController(IUserService userService, IAuthService authService)
+    public UserController(IUserService userService, IAuthService authService, IValidationService validationService)
     {
         _userService = userService;
         _authService = authService;
+        _validationService = validationService;
     }
 
     /// <summary>
@@ -30,6 +31,9 @@ public class UserController : ControllerBase
     [SwaggerOperation(Summary = "Register a new user", OperationId = "Register")]
     public async Task<IActionResult> RegisterUser([FromBody] UserDTO registrationDto)
     {
+        var validationResult = await _validationService.ValidateAsync(registrationDto);
+        if (validationResult != null) 
+            return validationResult;
         try
         {
             await _userService.RegisterUserAsync(registrationDto);
@@ -57,6 +61,9 @@ public class UserController : ControllerBase
     [SwaggerOperation(Summary = "Delete a specified user", OperationId = "DeleteUser")]
     public async Task<IActionResult> DeleteUser(string user)
     {
+        var validationResult = await _validationService.ValidateAsync(user);
+        if (validationResult != null)
+            return validationResult;
         try
         {
             await _userService.DeleteUserAsync(user);
@@ -81,6 +88,9 @@ public class UserController : ControllerBase
     [SwaggerOperation(Summary = "Update user username", OperationId = "UpdateUsername")]
     public async Task<IActionResult> UpdateUsername(string newUsername)
     {
+        var validationResult = await _validationService.ValidateAsync(newUsername);
+        if (validationResult != null)
+            return validationResult;
         try
         {
             await _userService.UpdateUsernameAsync(newUsername);
@@ -105,6 +115,9 @@ public class UserController : ControllerBase
     [SwaggerOperation(Summary = "Update user email", OperationId = "UpdateEmail")]
     public async Task<IActionResult> UpdateEmail(string newEmail)
     {
+        var validationResult = await _validationService.ValidateAsync(newEmail);
+        if (validationResult != null)
+            return validationResult;
         try
         {
             await _userService.UpdateEmailAsync(newEmail);
@@ -151,6 +164,9 @@ public class UserController : ControllerBase
     [SwaggerOperation(Summary = "Login a registered user", OperationId = "Login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
     {
+        var validationResult = await _validationService.ValidateAsync(loginDto);
+        if (validationResult != null)
+            return validationResult;
         try
         {
             var token = await _authService.AuthenticateAsync(loginDto);

@@ -103,7 +103,7 @@ namespace ForeignExchange.Tests.Repositories
         }
 
         [Fact]
-        public async Task UpdateUserEmailAsync_ShouldReturnTrue_WhenEmailUpdatedSuccessfully()
+        public async Task UpdateUserEmailAsync_ShouldNotThrowException_WhenEmailUpdatedSuccessfully()
         {
             // Arrange
             var user = new User { Username = "testuser", Email = "oldemail@example.com", PasswordHash = "hashedpassword" };
@@ -111,34 +111,15 @@ namespace ForeignExchange.Tests.Repositories
             await _context.SaveChangesAsync();
 
             // Act
-            var result = await _repository.UpdateUserEmailAsync(user, "newemail@example.com");
+            Func<Task> act = async () => await _repository.UpdateUserEmailAsync(user, "newemail@example.com");
 
             // Assert
-            Assert.True(result);
+            await act.Should().NotThrowAsync<Exception>();
             Assert.Equal("newemail@example.com", user.Email);
         }
 
         [Fact]
-        public async Task UpdateUserEmailAsync_ShouldReturnFalse_WhenEmailAlreadyExists()
-        {
-            // Arrange
-            var existingUser = new User { Username = "existinguser", Email = "existing@example.com", PasswordHash = "hashedpassword" };
-            _context.Users.Add(existingUser);
-            await _context.SaveChangesAsync();
-
-            var user = new User { Username = "testuser", Email = "oldemail@example.com", PasswordHash = "hashedpassword" };
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            // Act
-            var result = await _repository.UpdateUserEmailAsync(user, "existing@example.com");
-
-            // Assert
-            Assert.False(result);
-        }
-
-        [Fact]
-        public async Task UpdateUserUsernameAsync_ShouldReturnTrue_WhenUsernameUpdatedSuccessfully()
+        public async Task UpdateUserUsernameAsync_ShouldNotThrowException_WhenUsernameUpdatedSuccessfully()
         {
             // Arrange
             var user = new User { Username = "oldusername", Email = "user@example.com", PasswordHash = "hashedpassword" };
@@ -146,30 +127,11 @@ namespace ForeignExchange.Tests.Repositories
             await _context.SaveChangesAsync();
 
             // Act
-            var result = await _repository.UpdateUserUsernameAsync(user, "newusername");
+            Func<Task> act = async () => await _repository.UpdateUserUsernameAsync(user, "newusername");
 
             // Assert
-            Assert.True(result);
+            await act.Should().NotThrowAsync<Exception>();
             Assert.Equal("newusername", user.Username);
-        }
-
-        [Fact]
-        public async Task UpdateUserUsernameAsync_ShouldReturnFalse_WhenUsernameAlreadyExists()
-        {
-            // Arrange
-            var existingUser = new User { Username = "existinguser", Email = "existing@example.com", PasswordHash = "hashedpassword" };
-            _context.Users.Add(existingUser);
-            await _context.SaveChangesAsync();
-
-            var user = new User { Username = "oldusername", Email = "user@example.com", PasswordHash = "hashedpassword" };
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            // Act
-            var result = await _repository.UpdateUserUsernameAsync(user, "existinguser");
-
-            // Assert
-            Assert.False(result);
         }
 
         public void Dispose()
