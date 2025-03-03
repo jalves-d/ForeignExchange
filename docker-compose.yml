@@ -18,6 +18,20 @@ services:
       - "8080:8080"
     depends_on:
       - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ForeignExchange;User=sa;Password=Your_Strong_Password_123;TrustServerCertificate=True
+      - JwtSettings__SecretKey=YOUR_SECRET_KEY
+      - JwtSettings__Issuer=swagger-test
+      - JwtSettings__Audience=swagger-users
+      - JwtSettings__ExpirationTime=3600
+      - AlphaVantage__ApiKey=YOUR_API_KEY
+      - AlphaVantage__BaseUrl=https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={0}&to_currency={1}&apikey={2}  
+      - AzureServiceBus__ConnectionString=Endpoint=sb://your-servicebus-name.servicebus.windows.net/;SharedAccessKeyName=your-key-name;SharedAccessKey=your-key
+      - AzureServiceBus__QueueName=exchange-rates-queue
+      - EncryptHashing__SaltSize=16
+      - EncryptHashing__IterationCount=10000
+      - EncryptHashing__KeySize=32
+      - EncryptHashing__Pepper=YOUR_PEPPER
     command: >
       sh -c "dotnet ef database update --project ForeignExchange.Infrastructure/ForeignExchange.Infrastructure.csproj --startup-project ForeignExchange/ForeignExchange.csproj &&
       dotnet /app/publish/ForeignExchange.dll"
