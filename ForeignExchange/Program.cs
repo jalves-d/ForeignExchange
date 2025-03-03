@@ -141,7 +141,7 @@ using (var scope = app.Services.CreateScope())
     messageService.Subscribe(eventHandler);
 
     // Start listening for messages
-    await Task.Run(() => messageService.StartListeningAsync());
+    //await Task.Run(() => messageService.StartListeningAsync());
 }
 
 app.UseSwagger();
